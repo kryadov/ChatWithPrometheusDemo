@@ -16,8 +16,8 @@
         function connect() {
             var socket = new SockJS('/newMessage');
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
-                stompClient.subscribe('/topic/newMessage', function(message){
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe('/topic/newMessage', function (message) {
                     refreshMessages(JSON.parse(JSON.parse(message.body).content));
                 });
             });
@@ -29,17 +29,23 @@
             }
         }
 
-        function refreshMessages(messages) {
-            $(".media-list").html("");
-            $.each(messages.reverse(), function(i, message) {
-                $(".media-list").append('<li class="media"><div class="media-body"><div class="media"><div class="media-body">'
-                + message.text + '<br/><small class="text-muted">' + message.author + ' | ' + new Date(message.createDate) + '</small><hr/></div></div></div></li>');
-            });
+        function encodeHTML(s) {
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
         }
 
-        $(function(){
+        function refreshMessages(messages) {
+            $(".media-list").html("");
+            $.each(messages.reverse(), function (i, message) {
+                $(".media-list").append('<li class="media"><div class="media-body"><div class="media"><div class="media-body">'
+                    + encodeHTML(message.text) + '<br/><small class="text-muted">' + encodeHTML(message.author) + ' | ' + message.createDate + '</small><hr/></div></div></div></li>');
+            });
+            $container = $('.panel-body');
+            $container.animate({scrollTop: $container[0].scrollHeight}, "slow");
+        }
 
-            if (typeof $.cookie("realtime-chat-nickname") === 'undefined') {
+        $(function () {
+
+            if (typeof $.cookie("chat-nickname") === 'undefined') {
                 window.location = "/login"
             } else {
                 connect();
@@ -47,28 +53,29 @@
                     refreshMessages(messages)
                 });
 
-                $("#sendMessage").on("click", function() {
+                $("#sendMessage").on("click", function () {
                     sendMessage()
                 });
 
-                $('#messageText').keyup(function(e){
-                    if(e.keyCode == 13)
-                    {
+                $('#messageText').keyup(function (e) {
+                    if (e.keyCode == 13) {
                         sendMessage();
                     }
                 });
             }
 
             function sendMessage() {
+                if ($("#messageText").val().trim().length == 0)
+                    return
                 $container = $('.media-list');
                 $container[0].scrollTop = $container[0].scrollHeight;
                 var message = $("#messageText").val();
-                var author = $.cookie("realtime-chat-nickname");
+                var author = $.cookie("chat-nickname");
 
-                stompClient.send("/app/newMessage", {}, JSON.stringify({ 'text': message, 'author': author}));
+                stompClient.send("/app/newMessage", {}, JSON.stringify({'text': message, 'author': author}));
 
                 $("#messageText").val("")
-                $container.animate({ scrollTop: $container[0].scrollHeight }, "slow");
+                $container.animate({scrollTop: $container[0].scrollHeight}, "slow");
 
             }
         })
@@ -77,18 +84,20 @@
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
     <style type="text/css">
         .fixed-panel {
-        min-height: 500px;
-        max-height: 500px;
+            min-height: 500px;
+            max-height: 500px;
+            overflow-y: scroll;
         }
+
         .media-list {
-        overflow: auto;
+            overflow: auto;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="row " style="padding-top:40px;">
-        <h3 class="text-center">Realtime Chat Application with Spring Boot, Websockets, and MongoDB </h3>
+        <h2 class="text-center"> -=< Chat Application >=- </h2>
         <br/><br/>
 
         <div class="col-md-12">
@@ -102,9 +111,11 @@
                 </div>
                 <div class="panel-footer">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Enter Message" id="messageText" autofocus=""/>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-info" type="button" id="sendMessage">SEND <span class="glyphicon glyphicon-send"></span></button>
+                        <input type="text" class="form-control" placeholder="Enter Message" id="messageText"
+                               autofocus=""/>
+                        <span class="input-group-btn">
+                                        <button class="btn btn-info" type="button" id="sendMessage">SEND <span
+                                                class="glyphicon glyphicon-send"></span></button>
                                     </span>
                     </div>
                 </div>

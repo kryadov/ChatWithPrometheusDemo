@@ -3,34 +3,30 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.4.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.7.RELEASE")
+        classpath "com.avast.gradle:gradle-docker-compose-plugin:0.8.14"
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'war'
+apply plugin: 'docker-compose'
 
 jar {
-    baseName = 'realtime-chat'
-    version =  '0.1.0'
+    baseName = 'chat1'
+    version =  '0.0.1'
 }
 
 war {
     baseName = 'ROOT'
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
 repositories {
     mavenCentral()
 }
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
 
 dependencies {
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -39,9 +35,33 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-starter-websocket")
     compile("org.springframework:spring-messaging")
+    //
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    runtime("io.micrometer:micrometer-registry-prometheus")
+    //
+    compile 'io.prometheus.jmx:jmx_prometheus_javaagent:0.12.0'
+    compile 'io.prometheus:simpleclient_httpserver:0.6.0'
+    compile 'io.prometheus:simpleclient:0.6.0'
+    //
     testCompile("junit:junit")
+    testCompile 'com.codeborne:selenide:5.2.8'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+task copyLibs(type: Copy) {
+    from configurations.compile
+    include "jmx*"
+    into "$buildDir/libs"
 }
+
+//dockerCompose.isRequiredBy(test)
+
+dockerCompose {
+    useComposeFiles = ['docker-compose.yml']
+    removeContainers = true
+    forceRecreate = true
+    captureContainersOutput = true
+    removeImages = "None"
+    dockerComposeWorkingDirectory = '.'
+}
+
+build.dependsOn(copyLibs)

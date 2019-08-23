@@ -1,0 +1,2 @@
+set EXPORTER_OPTS=-javaagent:%~dp0..\build\libs\jmx_prometheus_javaagent-0.12.0.jar=23456:prometheus-jmx-config.yaml
+%JAVA_HOME%\bin\java %EXPORTER_OPTS% -jar %~dp0..\build\libs\Chat1.war --server.port=12345

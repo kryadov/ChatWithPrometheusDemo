@@ -1,0 +1,72 @@
+version: "3"
+services:
+
+  chat1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "chat1"
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    ports:
+      - 12345:12345
+      - 23456:23456
+      - 1234:1234
+
+  mongodb:
+    image: mongo:3.6
+    container_name: "mongodb"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - 27017:27017
+
+  mongodbexp:
+    image: skyscrapers/mongodb-exporter:latest
+    container_name: "mongodbexp"
+    entrypoint: mongodb_exporter -logtostderr -mongodb.uri mongodb://mongodb:27017
+    ports:
+      - 9001:9001
+
+  prometheus:
+    image: prom/prometheus
+    container_name: "prometheus"
+    privileged: true
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alertmanager/alert.rules:/alertmanager/alert.rules
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+    depends_on:
+      - chat1
+      - pushgateway
+
+  pushgateway:
+    image: prom/pushgateway
+    container_name: "pushgateway"
+    ports:
+      - '9091:9091'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+#    env_file:
+#      - 'env.grafana'
+    volumes:
+      - grafanadata:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  mongodata:
+  promdata:
+  grafanadata:

@@ -8,13 +8,13 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script>
         $(function(){
-            if ($.cookie("realtime-chat-nickname")) {
+            if ($.cookie("chat-nickname")) {
                 window.location = "/chat"
             } else {
                 $("#frm-login").submit(function(event) {
                     event.preventDefault();
                     if ($("#nickname").val() !== '') {
-                        $.cookie("realtime-chat-nickname", $("#nickname").val());
+                        $.cookie("chat-nickname", $("#nickname").val());
                         window.location = "/chat";
                     }
                 })

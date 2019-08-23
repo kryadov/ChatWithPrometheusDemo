@@ -1,0 +1,1 @@
+%JAVA_HOME%\bin\java -jar %~dp0..\build\libs\Chat1.war --server.port=12345

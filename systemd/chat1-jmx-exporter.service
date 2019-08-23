@@ -1,0 +1,11 @@
+[Unit]
+Description=Chat1
+After=network.target
+
+[Service]
+ExecStart=/opt/java/openjdk/bin/java -javaagent:/opt/jmx_prometheus_javaagent-0.12.0.jar=8080:config.yaml -jar /opt/Chat1.war --server.port=12345
+User=chat
+Group=chat
+
+[Install]
+WantedBy=multi-user.target

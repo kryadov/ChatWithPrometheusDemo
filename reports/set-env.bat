@@ -1,0 +1,1 @@
+rem set PYTHON_HOME=
