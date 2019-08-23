@@ -1,6 +1,8 @@
 # Chat1
 Chat Application with Spring Boot, Websockets, and MongoDB monitored by Prometheus.
 
+Requirements: Java 8+, JAVA_HOME enviroment variable.
+
 # 1. Build
 gradlew build
 
