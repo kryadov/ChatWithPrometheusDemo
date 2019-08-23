@@ -6,7 +6,9 @@ gradlew build
 
 # 2. Run
 ```docker-compose up -d --build```
+
 or
+
 Start mongodb, prometheus, exporters manually (use config directory) and execute bin\chat1.sh(.bat). 
 Also add dns record "127.0.0.1 mongodb pushgateway" to /etc/hosts (Unix) 
 or C:\Windows\System32\drivers\etc\hosts (Windows).
