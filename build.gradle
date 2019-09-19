@@ -33,6 +33,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-starter-websocket")
     compile("org.springframework:spring-messaging")
+    compile ("org.mongodb:mongo-java-driver:3.11.0")
     //
     compile("org.springframework.boot:spring-boot-starter-actuator")
     runtime("io.micrometer:micrometer-registry-prometheus")
@@ -40,6 +41,7 @@ dependencies {
     compile 'io.prometheus.jmx:jmx_prometheus_javaagent:0.12.0'
     compile 'io.prometheus:simpleclient_httpserver:0.6.0'
     compile 'io.prometheus:simpleclient:0.6.0'
+    compile("io.prometheus:simpleclient_pushgateway:0.6.0")
     //
     testCompile("junit:junit")
     testCompile 'com.codeborne:selenide:5.2.8'
